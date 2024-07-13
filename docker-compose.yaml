@@ -1,4 +1,4 @@
-version: '3.5'
+# version removed as it's not necessary in the latest version of Docker
 
 services:
   mock-user-service:
