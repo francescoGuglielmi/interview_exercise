@@ -125,6 +125,10 @@ describe('MessageData', () => {
       // And that is it now deleted
       const retrievedMessage = await messageData.getMessage(message.id.toHexString())
       expect(retrievedMessage.deleted).toEqual(true);
+
+      // Optionally, we could have the message retrieval fail due to the message being deleted.
+      // In that case we would like to assert the below:
+      // expect(messageData.getMessage(message.id.toHexString())).rejects.toThrow('Message not found');
     });
   });
 });
