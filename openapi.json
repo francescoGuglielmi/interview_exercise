@@ -977,6 +977,12 @@
                             "$ref": "#/components/schemas/Reaction"
                         }
                     },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Tag"
+                        }
+                    },
                     "isSenderBlocked": {
                         "type": "boolean"
                     }

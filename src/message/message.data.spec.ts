@@ -6,6 +6,8 @@ import { ChatMessageModel, ChatMessageSchema } from './models/message.model';
 
 import { ConfigManagerModule } from '../configuration/configuration-manager.module';
 import {getTestConfiguration}  from '../configuration/configuration-manager.utils';
+import { Tag } from '../conversation/models/CreateChatConversation.dto';
+import { TagType } from '../conversation/models/CreateChatConversation.dto';
 
 const id = new ObjectID('5fe0cce861c8ea54018385af');
 const conversationId = new ObjectID();
@@ -129,6 +131,28 @@ describe('MessageData', () => {
       // Optionally, we could have the message retrieval fail due to the message being deleted.
       // In that case we would like to assert the below:
       // expect(messageData.getMessage(message.id.toHexString())).rejects.toThrow('Message not found');
+    });
+  });
+
+  describe('update tags', () => {
+    it('should update the tags of a message', async () => {
+      const conversationId = new ObjectID();
+      const message = await messageData.create(
+        { conversationId, text: 'Message about university' },
+        senderId,
+      );
+      const tag1: Tag = { id: 'education', type: TagType.subTopic };
+      const tag2: Tag = { id: 'research', type: TagType.subTopic };
+
+      const taggedMessage = await messageData.updateTags(message.id, [tag1, tag2]);
+      expect(taggedMessage.tags).toHaveLength(2);
+
+      const retrievedMessage = await messageData.getMessage(message.id.toHexString());
+      expect(retrievedMessage.tags).toHaveLength(2);
+
+      const tagIds = retrievedMessage.tags?.map(tag => tag.id);
+      expect(tagIds).toContain('education');
+      expect(tagIds).toContain('research');
     });
   });
 });
