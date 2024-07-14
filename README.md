@@ -1,7 +1,23 @@
-# Unibuddy Engineering Exercise
+# Submission
 
-This exercise is based on the deployed Unibuddy Chat service. The chat service is a core component in our product suite. 
-We've based our interview exercise on this code so you can get a feel of the code and products you'd been working on, and we can understand how you would adapt to working with our code base! 
+As per my submission I could note that:
+  - I was able to successfully fix what was required in part one and two.
+  - I couldn't wrap my head around two errors that originate from the code in part three:
+    1. The test failing has the same structure as tests that are passing:
+
+    ![test failing](images/test-failing.png)
+
+    2. The application fails for not knowing what type are tags even if I declared it in message.dto.ts:
+
+    ![start failing](images/start-failing.png)
+
+  - I hope these points can be object of a discussion during the interview
+
+  Handles:
+
+  https://github.com/davidbebb
+  https://github.com/RichUnibuddy
+  https://github.com/anlauren
 
 
 ## Chat Service

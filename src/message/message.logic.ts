@@ -13,6 +13,7 @@ import {
   ResolveMessageDto,
   ReactionDto,
   PollOptionDto,
+  TagMessageDto
 } from './models/message.dto';
 import { MessageData } from './message.data';
 import { IAuthenticatedUser } from '../authentication/jwt.strategy';
@@ -29,6 +30,7 @@ import {
   UnresolveMessageEvent,
   ReactedMessageEvent,
   UnReactedMessageEvent,
+  TagMessageEvent,
 } from '../conversation/conversation-channel.socket';
 import { UserService } from '../user/user.service';
 import { ConversationData } from '../conversation/conversation.data';
@@ -47,6 +49,7 @@ import {
   MessageGroupedByConversationOutput,
   MessagesFilterInput,
 } from '../conversation/models/messagesFilterInput';
+import { Tag } from '../conversation/models/CreateChatConversation.dto';
 
 export interface IMessageLogic {
   create(
@@ -564,6 +567,35 @@ export class MessageLogic implements IMessageLogic {
     this.conversationChannel.send(
       messageEvent,
       reaction.conversationId.toHexString(),
+    );
+
+    return message;
+  }
+
+  async updateTags(
+    tags: TagMessageDto,
+    authenticatedUser: IAuthenticatedUser,
+  ): Promise<ChatMessage> {
+    // await this.throwForbiddenErrorIfNotAuthorized(
+    //   authenticatedUser,
+    //   tags.messageId,
+    //   Action.readConversation,
+    // );
+
+    const message = await this.messageData.updateTags(
+      tags.messageId,
+      tags.tags,
+    )
+
+    const messageEvent = new TagMessageEvent({
+      userId: authenticatedUser.userId,
+      messageId: tags.messageId,
+      tags: tags.tags,
+    })
+
+    this.conversationChannel.send(
+      messageEvent,
+      tags.conversationId.toHexString(),
     );
 
     return message;

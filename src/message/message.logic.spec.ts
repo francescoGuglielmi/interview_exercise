@@ -16,6 +16,7 @@ import {
   ReactedMessageEvent,
   ResolveMessageEvent,
   SendMessageEvent,
+  TagMessageEvent,
   UnReactedMessageEvent,
   UnlikeMessageEvent,
   UnresolveMessageEvent,
@@ -59,7 +60,7 @@ import {
 } from '../conversation/models/lastMessage.dto';
 import { Permission } from '../conversation/models/Permission.dto';
 import { LastReadInput } from '../conversation/models/LastReadInput.dto';
-import { Tag } from '../conversation/models/CreateChatConversation.dto';
+import { Tag, TagType } from '../conversation/models/CreateChatConversation.dto';
 
 const UNAUTHORISED_USER = new ObjectId('321b1a570ff321b1a570ff01');
 const validUser: IAuthenticatedUser = {
@@ -382,6 +383,7 @@ describe('MessageLogic', () => {
         deleted: false,
         resolved: false,
         likes: [],
+        tags: [],
       };
     }
 
@@ -400,6 +402,12 @@ describe('MessageLogic', () => {
       return Promise.resolve(
         this.getMockMessage(messageId.toHexString(), userId.toHexString()),
       );
+    }
+
+    updateTags(tags: Tag[], userId: ObjectID, messageId: ObjectID) {
+      return Promise.resolve(
+        this.getMockMessage(messageId.toHexString(), userId.toHexString()),
+      )
     }
 
     addVote(messageId: ObjectID, userId: ObjectID, option: string) {
@@ -540,7 +548,6 @@ describe('MessageLogic', () => {
     updateTags(conversationId: string, tags: Tag[]): Promise<ConversationDTO> {
       throw new Error('Method not implemented.');
     }
-
     isDirectConversation(contexts: ContextSchema[]): boolean {
       return false;
     }
@@ -1288,6 +1295,34 @@ describe('MessageLogic', () => {
       );
 
       expect(messageData.removeReaction).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('updateTags', () => {
+    it('should update the tags of a message', async () => {
+      jest.spyOn(messageData, 'updateTags');
+
+      await messageLogic.updateTags(
+        {
+          messageId,
+          conversationId,
+          tags: [{ id: 'some tag', type: TagType.subTopic }],
+        },
+        validUser
+      );
+
+      const event = new TagMessageEvent({
+        userId: validUser.userId,
+        messageId,
+        tags: [{ id: 'some tag', type: TagType.subTopic }],
+      });
+
+      expect(conversationChannel.send).toHaveBeenCalledWith(
+        event,
+        conversationId.toHexString(),
+      );
+      expect(true).toBe(true);
+      expect(messageData.updateTags).toHaveBeenCalledTimes(1);
     });
   });
 
