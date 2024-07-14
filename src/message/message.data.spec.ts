@@ -155,4 +155,9 @@ describe('MessageData', () => {
       expect(tagIds).toContain('research');
     });
   });
+
+  it('should throw an error if the message is not found', async () => {
+    const tag: Tag = { id: 'identifier', type: TagType.subTopic };
+    expect(messageData.updateTags(new ObjectID(), [tag])).rejects.toThrow('Message not found');
+  });
 });
